@@ -1,0 +1,27 @@
+{
+  "name": "uniname",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@nomiclabs/hardhat-etherscan": "^3.1.8",
+    "dotenv": "^17.2.0",
+    "hardhat": "^2.26.1"
+  },
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:local": "hardhat run scripts/deploy/deploy.js",
+    "deploy:morph": "hardhat run scripts/deploy/deploy.js --network morphHolesky",
+    "verify": "hardhat verify --network morphHolesky",
+    "clean": "hardhat clean"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.3"
+  }
+}
