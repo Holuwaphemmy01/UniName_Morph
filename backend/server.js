@@ -22,10 +22,11 @@ app.use('/graphql', graphqlHTTP({
   schema: schema,
   rootValue: root,
   graphiql: true, 
-  
+
 }));
 
 // Start server
 app.listen(3000, () => {
   console.log('🚀 Server running at http://localhost:3000/graphql');
+
 });
