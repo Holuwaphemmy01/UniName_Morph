@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/*.test.js"
   },
   "keywords": [],
   "author": "",
@@ -14,8 +14,14 @@
     "dotenv": "^17.2.1",
     "ether.js": "^1.0.0",
     "express": "^5.1.0",
-    "express-graphql": "^0.12.0",
     "graphql": "^16.11.0",
     "nodemon": "^3.1.10"
+  },
+  "devDependencies": {
+    "@graphql-tools/schema": "^10.0.25",
+    "chai": "^5.2.1",
+    "ethers": "^6.15.0",
+    "mocha": "^11.7.1",
+    "sinon": "^21.0.0"
   }
 }
