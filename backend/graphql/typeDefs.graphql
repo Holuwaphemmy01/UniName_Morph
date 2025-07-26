@@ -1,0 +1,34 @@
+# GraphQL schema for managing UniUser array and storing hash in StorageContract
+
+type User {
+  username: String!
+  morphAddress: String!
+  listOfAddress: [ChainAddress!]!
+}
+
+type ChainAddress {
+  chainName: String!
+  address: String!
+}
+
+type Query {
+  getUserListHash: String
+  getUser(username: String!): User
+}
+
+type Mutation {
+  saveUserArray(users: [UserInput!]!): String!
+  updateUserArray(users: [UserInput!]!): String!
+  addUser(username: String!, morphAddress: String!, listOfAddress: [ChainAddressInput!]!): User!
+}
+
+input UserInput {
+  username: String!
+  morphAddress: String!
+  listOfAddress: [ChainAddressInput!]!
+}
+
+input ChainAddressInput {
+  chainName: String!
+  address: String!
+}
