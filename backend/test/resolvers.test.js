@@ -1,45 +1,44 @@
+require("dotenv").config();
 const { expect } = require("chai");
 const sinon = require("sinon");
-const { ethers } = require("ethersproject/ethers"); // Use require for compatibility
+const { ethers } = require("ethers");
+const { JsonRpcProvider, Wallet } = ethers;
 const { createHash } = require("crypto");
-const UniUser = require("../model/UniUser");
-const resolvers = require("../schema/resolvers.js");
-const { JsonRpcProvider, Wallet, Contract } = require("@ethersproject/providers");
-const { createMockProvider, createMockContract } = require("./helpers.js");
+const UniUser = require("../src/models/UniUser.js");
+const resolvers = require("../src/schema/resolvers.js");
+const StorageContract = require("../src/contract-interfaces/StorageContract.json");
+const { createMockProvider, createMockContract } = require("./Helper.js");
 
 describe("Resolvers.js Unit Tests", () => {
   let provider, wallet, mockContract, sandbox;
   let usersArray;
 
-  beforeEach((() => {
+  beforeEach(() => {
     sandbox = sinon.createSandbox();
     provider = createMockProvider();
-    wallet = new Wallet("0xPRIVATE_KEY", provider);
+    wallet = new Wallet(process.env.PRIVATE_KEY, provider);
     mockContract = createMockContract(StorageContract.abi, wallet);
-    // Override storageContract in resolvers
     resolvers.setStorageContract(mockContract);
-    // Reset users array
     usersArray = [];
     resolvers.setUsersArray(usersArray);
-    // Set environment variables
-    process.env.ENCRYPTION_KEY = Buffer.from("a".repeat(64), "hex"); // 32 bytes
-    process.env.ENCRYPTION_IV = Buffer.from("b".repeat(16), "hex"); // 16 bytes
-  }));
+    process.env.ENCRYPTION_KEY = Buffer.from("a".repeat(64), "hex");
+    process.env.ENCRYPTION_IV = Buffer.from("b".repeat(16), "hex");
+  });
 
-  afterEach((() => {
+  afterEach(() => {
     sandbox.restore();
-    }));
+  });
 
   it("should retrieve hash from StorageContract via getUserListHash", async () => {
     const expectedHash = "0x1234567890abcdef";
-    sandbox.stub(mockContract, "getData").returns(Promise.resolve(expectedHash));
+    sandbox.stub(mockContract, "getData").resolves(expectedHash);
     const result = await resolvers.Query.getUserListHash();
     expect(result).to.equal(expectedHash);
-    expect(mockContract.getData).to.have.been.calledOnce();
+    expect(mockContract.getData.calledOnce).to.be.true;
   });
 
   it("should return null if no hash exists in getUserListHash", async () => {
-    sandbox.stub(mockContract.getData).returns(Promise.resolve(""));
+    sandbox.stub(mockContract, "getData").resolves("");
     const result = await resolvers.Query.getUserListHash();
     expect(result).to.equal("");
   });
@@ -59,7 +58,12 @@ describe("Resolvers.js Unit Tests", () => {
   });
 
   it("should throw error if user not found in getUser", async () => {
-    await expect(resolvers.Query.getUser(null, { username: "nonexistent" })).to.be.rejectedWith("User not found");
+    try {
+      await resolvers.Query.getUser(null, { username: "nonexistent" });
+      expect.fail("Expected getUser to throw an error");
+    } catch (error) {
+      expect(error.message).to.equal("User not found");
+    }
   });
 
   it("should save UniUser array and store hash via saveUserArray", async () => {
@@ -70,25 +74,52 @@ describe("Resolvers.js Unit Tests", () => {
         listOfAddress: [{ chainName: "ethereum", address: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" }]
       }
     ];
-    sandbox.stub(mockContract, "saveData").returns(Promise.resolve({ wait: () => Promise.resolve() }));
+    sandbox.stub(mockContract, "saveData").resolves({ wait: async () => ({}) });
     const result = await resolvers.Mutation.saveUserArray(null, { users: input });
-    expect(result).to.be.a("string").length(64); // SHA-256 hash
+    expect(result).to.be.a("string").length(64);
     expect(usersArray).to.have.length(1);
-    expect(mockContract.saveData).to.have.been.calledOnce();
+    expect(mockContract.saveData.calledOnce).to.be.true;
   });
 
   it("should reject saveUserArray with empty users array", async () => {
-    await expect(resolvers.Mutation.saveUserArray(null, { users: [] })).to.be.rejectedWith("Users array cannot be empty");
+    try {
+      await resolvers.Mutation.saveUserArray(null, { users: [] });
+      expect.fail("Expected saveUserArray to throw an error");
+    } catch (error) {
+      expect(error.message).to.equal("Users array cannot be empty");
+    }
   });
 
   it("should reject saveUserArray with missing username", async () => {
-    const input = [{ username: "", morphAddress: "0x1234...", listOfAddress: [] }];
-    await expect(resolvers.Mutation.saveUserArray(null, { users: input })).to.be.rejectedWith("Username is required");
+    const input = [
+      {
+        username: "",
+        morphAddress: "0x1234567890123456789012345678901234567890",
+        listOfAddress: []
+      }
+    ];
+    try {
+      await resolvers.Mutation.saveUserArray(null, { users: input });
+      expect.fail("Expected saveUserArray to throw an error");
+    } catch (error) {
+      expect(error.message).to.equal("Username is required");
+    }
   });
 
   it("should reject saveUserArray with invalid morphAddress", async () => {
-    const input = [{ username: "user1", morphAddress: "invalid", listOfAddress: [] }];
-    await expect(resolvers.Mutation.saveUserArray(null, { users: input })).to.be.rejectedWith("Invalid Morph address");
+    const input = [
+      {
+        username: "user1",
+        morphAddress: "invalid",
+        listOfAddress: []
+      }
+    ];
+    try {
+      await resolvers.Mutation.saveUserArray(null, { users: input });
+      expect.fail("Expected saveUserArray to throw an error");
+    } catch (error) {
+      expect(error.message).to.equal("Invalid Morph address");
+    }
   });
 
   it("should reject saveUserArray with invalid chain address", async () => {
@@ -99,7 +130,12 @@ describe("Resolvers.js Unit Tests", () => {
         listOfAddress: [{ chainName: "ethereum", address: "invalid" }]
       }
     ];
-    await expect(resolvers.Mutation.saveUserArray(null, { users: input })).to.be.rejectedWith("Invalid chain address");
+    try {
+      await resolvers.Mutation.saveUserArray(null, { users: input });
+      expect.fail("Expected saveUserArray to throw an error");
+    } catch (error) {
+      expect(error.message).to.equal("Invalid chain address");
+    }
   });
 
   it("should update UniUser array and store hash via updateUserArray", async () => {
@@ -110,20 +146,36 @@ describe("Resolvers.js Unit Tests", () => {
         listOfAddress: [{ chainName: "bsc", address: "0xbbcdefabcdefabcdefabcdefabcdefabcdefabcd" }]
       }
     ];
-    sandbox.stub(mockContract, "updateData").returns(Promise.resolve({ wait: () => Promise.resolve() }));
+    sandbox.stub(mockContract, "updateData").resolves({ wait: async () => ({}) });
     const result = await resolvers.Mutation.updateUserArray(null, { users: input });
     expect(result).to.be.a("string").length(64);
     expect(usersArray).to.have.length(1);
-    expect(mockContract.updateData).to.have.been.calledOnce();
+    expect(mockContract.updateData.calledOnce).to.be.true;
   });
 
   it("should reject updateUserArray with empty users array", async () => {
-    await expect(resolvers.Mutation.updateUserArray(null, { users: [] })).to.be.rejectedWith("Users array cannot be empty");
+    try {
+      await resolvers.Mutation.updateUserArray(null, { users: [] });
+      expect.fail("Expected updateUserArray to throw an error");
+    } catch (error) {
+      expect(error.message).to.equal("Users array cannot be empty");
+    }
   });
 
   it("should reject updateUserArray with missing username", async () => {
-    const input = [{ username: "", morphAddress: "0x1234...", listOfAddress: [] }];
-    await expect(resolvers.Mutation.updateUserArray(null, { users: input })).to.be.rejectedWith("Username is required");
+    const input = [
+      {
+        username: "",
+        morphAddress: "0x1234567890123456789012345678901234567890",
+        listOfAddress: []
+      }
+    ];
+    try {
+      await resolvers.Mutation.updateUserArray(null, { users: input });
+      expect.fail("Expected updateUserArray to throw an error");
+    } catch (error) {
+      expect(error.message).to.equal("Username is required");
+    }
   });
 
   it("should add single user via addUser", async () => {
@@ -132,9 +184,15 @@ describe("Resolvers.js Unit Tests", () => {
       morphAddress: "0x1234567890123456789012345678901234567890",
       listOfAddress: [{ chainName: "ethereum", address: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" }]
     };
+    sandbox.stub(mockContract, "saveData").resolves({ wait: async () => ({}) });
     const result = await resolvers.Mutation.addUser(null, input);
-    expect(result).to.deep.equal(input);
+    expect(result).to.deep.equal({
+      username: "user1",
+      morphAddress: "0x1234567890123456789012345678901234567890",
+      listOfAddress: [{ chainName: "ethereum", address: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" }]
+    });
     expect(usersArray).to.have.length(1);
+    expect(mockContract.saveData.calledOnce).to.be.true;
   });
 
   it("should reject addUser with invalid morphAddress", async () => {
@@ -143,7 +201,12 @@ describe("Resolvers.js Unit Tests", () => {
       morphAddress: "invalid",
       listOfAddress: []
     };
-    await expect(resolvers.Mutation.addUser(null, input)).to.be.rejectedWith("Invalid Morph address");
+    try {
+      await resolvers.Mutation.addUser(null, input);
+      expect.fail("Expected addUser to throw an error");
+    } catch (error) {
+      expect(error.message).to.equal("Invalid Morph address");
+    }
   });
 
   it("should reject addUser with missing username", async () => {
@@ -152,7 +215,12 @@ describe("Resolvers.js Unit Tests", () => {
       morphAddress: "0x1234567890123456789012345678901234567890",
       listOfAddress: []
     };
-    await expect(resolvers.Mutation.addUser(null, input)).to.be.rejectedWith("Username is required");
+    try {
+      await resolvers.Mutation.addUser(null, input);
+      expect.fail("Expected addUser to throw an error");
+    } catch (error) {
+      expect(error.message).to.equal("Username is required");
+    }
   });
 
   it("should reject addUser with invalid chain address", async () => {
@@ -161,18 +229,24 @@ describe("Resolvers.js Unit Tests", () => {
       morphAddress: "0x1234567890123456789012345678901234567890",
       listOfAddress: [{ chainName: "ethereum", address: "invalid" }]
     };
-    await expect(resolvers.Mutation.addUser(null, input)).to.be.rejectedWith("Invalid chain address");
+    try {
+      await resolvers.Mutation.addUser(null, input);
+      expect.fail("Expected addUser to throw an error");
+    } catch (error) {
+      expect(error.message).to.equal("Invalid chain address");
+    }
   });
 
   it("should handle large UniUser array in saveUserArray", async () => {
     const input = Array(100).fill().map((_, i) => ({
       username: `user${i}`,
-      morphAddress: `0x${"1234".repeat(10)}`,
-      listOfAddress: [{ chainName: "ethereum", address: `0x${"abcd".repeat(10)}` }]
+      morphAddress: "0x1234567890123456789012345678901234567890",
+      listOfAddress: [{ chainName: "ethereum", address: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" }]
     }));
-    sandbox.stub(mockContract, "saveData").returns(Promise.resolve({ wait: () => Promise.resolve() }));
+    sandbox.stub(mockContract, "saveData").resolves({ wait: async () => ({}) });
     const result = await resolvers.Mutation.saveUserArray(null, { users: input });
     expect(result).to.be.a("string").length(64);
     expect(usersArray).to.have.length(100);
+    expect(mockContract.saveData.calledOnce).to.be.true;
   });
 });

@@ -11,9 +11,10 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "apollo-server-express": "^3.13.0",
     "dotenv": "^17.2.1",
     "ether.js": "^1.0.0",
-    "express": "^5.1.0",
+    "express": "^4.21.2",
     "graphql": "^16.11.0",
     "nodemon": "^3.1.10"
   },
@@ -22,6 +23,6 @@
     "chai": "^5.2.1",
     "ethers": "^6.15.0",
     "mocha": "^11.7.1",
-    "sinon": "^21.0.0"
+    "sinon": "^15.2.0"
   }
 }
