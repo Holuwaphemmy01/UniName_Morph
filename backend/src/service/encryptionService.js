@@ -1,6 +1,6 @@
-import crypto from 'crypto';
+const crypto = require('crypto');
 
-export function encryptAES(data, key) {
+function encryptAES(data, key) {
   const iv = crypto.randomBytes(12); // AES-GCM IV is 12 bytes
   const cipher = crypto.createCipheriv('aes-256-gcm', Buffer.from(key), iv);
 
@@ -15,7 +15,7 @@ export function encryptAES(data, key) {
   };
 }
 
-export function decryptAES(encryptedData, key, ivHex, tagHex) {
+ function decryptAES(encryptedData, key, ivHex, tagHex) {
   const iv = Buffer.from(ivHex, 'hex');
   const tag = Buffer.from(tagHex, 'hex');
 
@@ -26,3 +26,5 @@ export function decryptAES(encryptedData, key, ivHex, tagHex) {
   decrypted += decipher.final('utf8');
   return decrypted;
 }
+
+module.exports = { encryptAES, decryptAES };

@@ -1,10 +1,12 @@
-import { encryptAES, decryptAES } from '../../service/encryptionService.js';
-import {
+// import { encryptAES, decryptAES } from '../../service/encryptionService.js';
+const {encryptAES, decryptAES} = require('../../service/encryptionService.js');
+const {
   saveData,
-  updateData
-} from '../../service/blockchainService.js';
+  updateData,
+  getData
+} = require('../../service/blockchainService.js');
 
-export default {
+module.exports = {
   Query: {
     getEncryptedUserData: async (_, { address }) => {
       const encrypted = await getData(address); // get from contract
