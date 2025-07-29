@@ -1,32 +1,37 @@
-import { encryptAES } from '../../service/encryptionService.js';
+import { encryptAES, decryptAES } from '../../service/encryptionService.js';
+import {
+  saveData,
+  updateData
+} from '../../service/blockchainService.js';
 
 export default {
   Query: {
     getEncryptedUserData: async (_, { address }) => {
-      // Placeholder: return fake until contract is deployed
-      return `Encrypted data for ${address}`;
+      const encrypted = await getData(address); // get from contract
+      const decrypted = decryptAES(encrypted); // if needed
+      return decrypted;
     },
   },
+
   Mutation: {
-    Mutation: {
-    async storeEncryptedUserData(_, { data }, context) {
-      const encrypted = encryptAES(data); // your existing function
-      const tx = await contract.saveData(encrypted); // write to chain
-      await tx.wait(); // confirm transaction
+    async storeEncryptedUserData(_, { data }) {
+      const encrypted = encryptAES(data);
+      const tx = await saveData(encrypted);
+      await tx.wait();
       return true;
     },
-    async updateEncryptedUserData(_, { data }, context) {
-      const encrypted = encryptAES(data); // your existing function
-      const tx = await contract.updateData(encrypted); // write to chain
-      await tx.wait(); // confirm transaction
+
+    async updateEncryptedUserData(_, { data }) {
+      const encrypted = encryptAES(data);
+      const tx = await updateData(encrypted);
+      await tx.wait();
       return true;
     },
-    async deleteEncryptedUserData(_, { address }, context) {
-      const tx = await contract.deleteData(address); // write to chain
-      await tx.wait(); // confirm transaction
-      return true;
-    },
-    },
-    
+
+    // async deleteEncryptedUserData(_, { address }) {
+    //   const tx = await deleteData(address);
+    //   await tx.wait();
+    //   return true;
+    // },
   },
 };

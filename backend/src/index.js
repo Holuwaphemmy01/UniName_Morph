@@ -1,8 +1,8 @@
-import { ApolloServer } from '@apollo/server';
-import { startStandaloneServer } from '@apollo/server/standalone';
-import typeDefs from './graphql/schema/index.js';
-import resolvers from './graphql/resolvers/index.js';
-import dotenv from 'dotenv';
+const ApolloServer = require('@apollo/server');
+const startStandaloneServer = require('@apollo/server/standalone');
+const typeDefs = require('./graphql/schema/index.js');
+const resolvers = require('./graphql/resolvers/index.js');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
