@@ -1,9 +1,7 @@
-// import { encryptAES, decryptAES } from '../../service/encryptionService.js';
 const {encryptAES, decryptAES} = require('../../service/encryptionService.js');
 const {
   saveData,
   updateData,
-  getData
 } = require('../../service/blockchainService.js');
 
 module.exports = {
@@ -29,11 +27,6 @@ module.exports = {
       await tx.wait();
       return true;
     },
-
-    // async deleteEncryptedUserData(_, { address }) {
-    //   const tx = await deleteData(address);
-    //   await tx.wait();
-    //   return true;
-    // },
   },
 };
+
