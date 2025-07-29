@@ -1,27 +1,19 @@
 const { ethers } = require('ethers');
-require('dotenv').config(); // load .env variables
+require('dotenv').config(); 
+const {MNEMONIC, MORPH_RPC_URL, CONTRACT_ADDRESS} = process.env;
 
 const storageContractAddress = require('../contracts/contractAddress.js');
 const abi = require('../contracts/userData.abi.json').abi;
 
-// Read environment variables
-const MNEMONIC = process.env.MNEMONIC;
-const RPC_URL = process.env.MORPH_RPC_URL;
-
 // Validate
 if (!MNEMONIC) throw new Error("MNEMONIC is not set in .env");
-if (!RPC_URL) throw new Error("MORPH_RPC_URL is not set in .env");
+if (!MORPH_RPC_URL) throw new Error("MORPH_RPC_URL is not set in .env");
 
-const provider = new ethers.JsonRpcProvider(RPC_URL);
+const provider = new ethers.JsonRpcProvider(MORPH_RPC_URL);
 
 // ✅ Create wallet from mnemonic
 const wallet = ethers.Wallet.fromPhrase(MNEMONIC).connect(provider);
 const contract = new ethers.Contract(process.env.CONTRACT_ADDRESS, abi, wallet);
-
-
-
-// Initialize contract
-// const contract = new ethers.Contract(storageContractAddress, abi, wallet);
 
 // Functions
 async function saveData(data) {

@@ -13,6 +13,8 @@ type Query {
   getEncryptedUserData(address: String!): String!
 }
 
+
 type Mutation {
   storeEncryptedUserData(data: String!): Boolean!
+  updateEncryptedUserData(data: String!): Boolean!
 }
