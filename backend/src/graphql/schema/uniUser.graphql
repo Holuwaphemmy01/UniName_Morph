@@ -1,0 +1,18 @@
+type ChainAddress {
+  chainName: String!
+  address: String!
+}
+
+type UniUser {
+  username: String!
+  morphAddress: String!
+  listOfAddress: [ChainAddress!]!
+}
+
+type Query {
+  getEncryptedUserData(address: String!): String!
+}
+
+type Mutation {
+  storeEncryptedUserData(data: String!): Boolean!
+}
