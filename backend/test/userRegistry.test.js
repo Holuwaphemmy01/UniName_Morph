@@ -1,0 +1,55 @@
+const redis = require('../src/service/redisClient.js');
+const userRegistry = require('../src/service/userRegistryService.js');
+
+describe('User Registry Service', () => {
+  const sampleUser = {
+    username: 'femi.eth',
+    walletAddress: '0xabc123456789abcdef',
+    chain: 'eth'
+  };
+
+  const redisKey = 'userDataArray';
+
+  beforeEach(async () => {
+    await redis.del(redisKey);
+  });
+
+  afterEach(async () => {
+    await redis.del(redisKey);
+  });
+
+  afterAll(async () => {
+    await redis.quit(); 
+  });
+
+  test('should register a new user and store in Redis', async () => {
+    const result = await userRegistry.registerUser(sampleUser);
+    expect(result).toBe(true);
+
+    const redisData = await redis.get(redisKey);
+    const parsed = JSON.parse(redisData);
+    expect(parsed.length).toBe(1);
+    expect(parsed[0].username).toBe(sampleUser.username);
+    expect(parsed[0].wallets.eth[0]).toBe(sampleUser.walletAddress);
+  }, 15000);
+
+  test('should reject registration if username already exists', async () => {
+    await userRegistry.registerUser(sampleUser);
+
+    await expect(userRegistry.registerUser(sampleUser))
+      .rejects
+      .toThrow(/Username already taken/);
+  }, 15000);
+
+  test('should allow multiple wallets per username variant', async () => {
+     await userRegistry.registerUser({ username: 'femi.eth', chain: 'eth', walletAddress: '0xwallet1' });
+     await userRegistry.registerUser({ username: 'femi.eth01', chain: 'eth', walletAddress: '0xwallet2' });
+     await userRegistry.registerUser({ username: 'femi.eth02', chain: 'eth', walletAddress: '0xwallet3' });
+
+    const redisData = JSON.parse(await redis.get(redisKey));
+    expect(redisData).not.toBeNull();
+    expect(redisData.length).toBe(3);
+    expect(redisData[1].username).toBe('femi.eth01');
+    expect(redisData[2].wallets.eth[0]).toBe('0xwallet3');
+  }, 15000);
+});

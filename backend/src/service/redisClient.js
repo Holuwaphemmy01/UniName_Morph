@@ -1,6 +1,3 @@
-// backend/src/service/redisClient.js
-// import Redis from 'ioredis';
-// import dotenv from 'dotenv';
 const Redis = require('ioredis');
 const dotenv = require('dotenv')
 dotenv.config();
@@ -18,4 +15,5 @@ redis.on('error', (err) => {
   console.error('❌ Redis error:', err);
 });
 
-export default redis;
+module.exports = redis;
+
