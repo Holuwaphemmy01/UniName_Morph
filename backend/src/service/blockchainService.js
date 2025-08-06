@@ -2,8 +2,8 @@ const { ethers } = require('ethers');
 require('dotenv').config(); 
 const {MNEMONIC, MORPH_RPC_URL, CONTRACT_ADDRESS} = process.env;
 
-const storageContractAddress = require('../contracts/contractAddress.js');
-const abi = require('../contracts/userData.abi.json').abi;
+const storageContractAddress = require('../contracts/userData/contractAddress.js');
+const abi = require('../contracts/userData/userData.abi.json').abi;
 
 // Validate
 if (!MNEMONIC) throw new Error("MNEMONIC is not set in .env");
