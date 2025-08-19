@@ -17,4 +17,6 @@ type Query {
 type Mutation {
   storeEncryptedUserData(data: String!): Boolean!
   updateEncryptedUserData(data: String!): Boolean!
+  registerUser(username: String!, walletAddress: String!, chain: String!, amountInEth: String!, adminAddress: String!): Boolean
+  updateListOfWallet(baseUsername: String!, chain: String!, walletAddress: String!): String
 }

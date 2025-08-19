@@ -4,6 +4,7 @@ const {
   updateData,
 } = require('../../service/blockchainService.js');
 
+
 module.exports = {
   Query: {
     getEncryptedUserData: async (_, { address }) => {
@@ -26,6 +27,17 @@ module.exports = {
       const tx = await updateData(encrypted);
       await tx.wait();
       return true;
+    },
+
+    async registerUser(_, { username, walletAddress, chain, amountInEth, adminAddress }) {
+      // Call the user registry service to handle registration logic
+      return await require('../../service/userRegistryService.js').registerUser({
+        username,
+        walletAddress,
+        chain,
+        amountInEth,
+        adminAddress,
+      });
     },
   },
 };

@@ -22,12 +22,12 @@ async function main() {
   const blockNumber = await provider.getBlockNumber();
   console.log("Latest block:", blockNumber);
   
-  console.log("✅ Connection successful!");
+  console.log("Connection successful!");
 }
 
 main()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error("❌ Connection failed:", error);
+    console.error("Connection failed:", error);
     process.exit(1);
   });
