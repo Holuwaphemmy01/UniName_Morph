@@ -26,7 +26,7 @@ const ActionSection = () => {
       <section className="py-20 bg-slate-900 text-center">
         <h2 className="text-3xl font-bold mb-4 text-white">Ready to simplify Web3?</h2>
         <p className="max-w-xl mx-auto mb-6 text-slate-400">
-          Join the SonicX ecosystem and experience the future of identity and transactions on the fastest, builder-friendly blockchain.
+          Join the Uniname ecosystem and experience the future of identity and transactions on the fastest, builder-friendly blockchain.
         </p>
         <Button
           //onClick={handleConnectWallet}

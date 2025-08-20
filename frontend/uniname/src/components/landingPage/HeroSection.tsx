@@ -19,7 +19,7 @@ const HeroSection = () => {
           transition={{ duration: 0.6 }}
           className="text-6xl font-extrabold mb-6"
         >
-          SonicX – Web3 Identity Reinvented
+          Uniname Web3 Identity Reinvented
         </motion.h1>
         <p className="max-w-2xl mx-auto text-lg opacity-90">
           Register once, link wallets across chains, and transact with human-readable usernames – no more 0x addresses.
