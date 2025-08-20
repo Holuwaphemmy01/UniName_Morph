@@ -5,8 +5,8 @@ import Button from '@mui/material/Button';
 const Header = () => {
 
     const [connected, setConnected] = useState(false);
-  const [username] = useState("femi.sonic");
-  
+    const [username] = useState("femi.sonic");
+
   const handleConnectWallet = () => {
     setConnected(true);
   };
@@ -14,12 +14,12 @@ const Header = () => {
 
 
   return (
-    <div>
-       <nav className="sticky top-0 z-20 bg-slate-950/80 backdrop-blur border-b border-slate-800">
+    <div className="">
+       <nav className="sticky top-0 z-20 bg-slate-950 backdrop-blur border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Zap className="h-6 w-6 text-indigo-400" />
-            <span className="text-xl font-bold">SonicX</span>
+            <span className="text-xl font-bold text-white">Uniname</span>
           </div>
 
           <div className="flex items-center gap-4">
