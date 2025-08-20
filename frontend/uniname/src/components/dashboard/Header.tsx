@@ -6,17 +6,7 @@ const Header = () => {
 
     const [connected, setConnected] = useState(false);
   const [username] = useState("femi.sonic");
-  const [wallets] = useState([
-    { chain: "Ethereum", address: "0x1234...abcd", balance: "1.25 ETH" },
-    { chain: "Solana", address: "So1aNaWal1etKey...", balance: "120 SOL" },
-    { chain: "Sui", address: "SuiWal1etKey...", balance: "560 SUI" },
-  ]);
-  const [transactions] = useState([
-    { id: 1, to: "david.sonic", amount: "25", chain: "Ethereum" },
-    { id: 2, to: "mariam.sonic", amount: "10", chain: "Solana" },
-    { id: 3, to: "john.sonic", amount: "50", chain: "Sui" },
-  ]);
-
+  
   const handleConnectWallet = () => {
     setConnected(true);
   };
@@ -33,7 +23,6 @@ const Header = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Profile Section */}
             <div className="flex items-center gap-2 cursor-pointer hover:opacity-80">
               <UserCircle className="h-8 w-8 text-indigo-400" />
               <span className="hidden md:inline text-sm font-medium">{username}</span>
