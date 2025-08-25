@@ -1,6 +1,7 @@
 pragma solidity ^0.8.0;
 
-contract Register {
+
+contract RegisterUser{
     struct User {
         string username;
         address walletAddress;
